@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Diagnosis Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white shadow-lg rounded-lg p-6 max-w-lg w-full">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Upload Medical Report</h2>
+
+        <!-- File Input for Report Upload -->
+        <input type="file" id="fileInput" class="w-full p-2 border rounded-lg mb-4" accept="application/pdf">
+        
+        <!-- Symptoms Input for Diagnosis -->
+        <textarea id="symptomsInput" class="w-full p-2 border rounded-lg mb-4" placeholder="Enter symptoms here..."></textarea>
+
+        <div class="flex gap-3">
+            <button onclick="uploadFile('/api/report')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                Analyze Report
+            </button>
+            <button onclick="getDiagnosis('/api/diagnosis')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                Get Diagnosis
+            </button>
+        </div>
+
+        <h3 class="text-lg font-medium mt-4">Response:</h3>
+        <pre id="responseOutput" class="bg-gray-50 p-4 border rounded-lg text-sm overflow-auto max-h-60 mt-2"></pre>
+    </div>
+
+    <script>
+        async function uploadFile(endpoint) {
+            const fileInput = document.getElementById("fileInput");
+            const responseOutput = document.getElementById("responseOutput");
+
+            if (!fileInput.files.length) {
+                alert("Please select a PDF file.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            responseOutput.textContent = "Uploading...";
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+                responseOutput.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseOutput.textContent = "Error: " + error.message;
+            }
+        }
+
+        async function getDiagnosis(endpoint) {
+            const symptomsInput = document.getElementById("symptomsInput");
+            const responseOutput = document.getElementById("responseOutput");
+
+            const symptoms = symptomsInput.value.trim();
+            if (!symptoms) {
+                alert("Please enter symptoms.");
+                return;
+            }
+
+            responseOutput.textContent = "Processing symptoms...";
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ symptoms })
+                });
+
+                const data = await response.json();
+                responseOutput.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseOutput.textContent = "Error: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
