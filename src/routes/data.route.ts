@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllDocs, getAllHospitals, searchDocsByName, searchHospitalsByName } from './data.controller';
+import { getAllDocs, getAllHospitals, searchDocsByName, searchHospitalsByName } from './data.controller.js';
 
 const router = express.Router();
 

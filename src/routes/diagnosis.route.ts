@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getDiagnosis } from "./diagnosis.controller";
+import { getDiagnosis } from "./diagnosis.controller.js";
 
 const router = Router();
 

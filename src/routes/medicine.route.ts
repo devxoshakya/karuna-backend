@@ -1,4 +1,4 @@
-import { getAllMedicines, searchMedicineByName } from "./medicine.controller";
+import { getAllMedicines, searchMedicineByName } from "./medicine.controller.js";
 import type { Request, Response, NextFunction } from 'express';
 import express from "express";
 
