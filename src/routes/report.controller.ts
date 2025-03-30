@@ -27,7 +27,7 @@ export const processReport = async (req: any, res: any) => {
 
     // 🔥 **Merge with system prompt**
     const systemPrompt = `
-      You are an AI medical assistant analyzing a patient's report.
+      You are an AI medical assistant analyzing a patient's report. Dont mention name of the patient, just thier age
       Extract symptoms, suggest a diagnosis, recommend medications, and necessary lifestyle changes.
       Ensure the response is a **valid JSON** with:
       - "diagnosis": Brief diagnosis.
