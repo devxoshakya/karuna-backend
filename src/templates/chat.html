@@ -24,7 +24,7 @@
         let sessionId = null;
 
         async function startSession() {
-            const response = await fetch("http://localhost:3000/api/chat/start", { method: "POST" });
+            const response = await fetch("http://localhost:5000/api/chat/start", { method: "POST" });
             const data = await response.json();
             sessionId = data.sessionId;
         }
@@ -38,7 +38,7 @@
             const messagesDiv = document.getElementById("messages");
             messagesDiv.innerHTML += `<div class='user'>You: ${message}</div>`;
 
-            const response = await fetch("http://localhost:3000/api/chat/send", {
+            const response = await fetch("http://localhost:5000/api/chat/send", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ sessionId, message })
