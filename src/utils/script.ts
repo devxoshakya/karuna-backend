@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import ConnectDB from '../src/db/ConnectDB.js';
-import Student from '../src/models/Student.js';
+import ConnectDB from '../db/ConnectDB.js';
+import Student from '../models/Student.js';
 
 async function importStudentData() {
     try {
