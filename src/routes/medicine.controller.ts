@@ -1,5 +1,7 @@
 import CacheService from '../services/CacheService.js';
 import  Drug  from '../models/Drug.js';
+import ConnectDB from '../db/ConnectDB.js';
+
 
 export const searchMedicineByName = async (req: any, res: any) => {
     try {

@@ -4,7 +4,7 @@ import CacheService from '../services/CacheService.js';
 /**
  * Clear all cache
  */
-export const clearCache = async (req: Request, res: Response) => {
+export const clearCache = (req: Request, res: Response) => {
   try {
     CacheService.clearAll();
     res.status(200).json({ 
@@ -23,7 +23,7 @@ export const clearCache = async (req: Request, res: Response) => {
 /**
  * Get cache statistics
  */
-export const getCacheStats = async (req: Request, res: Response) => {
+export const getCacheStats = (req: Request, res: Response) => {
   try {
     const stats = CacheService.getStats();
     const keys = CacheService.getKeys();
@@ -48,15 +48,16 @@ export const getCacheStats = async (req: Request, res: Response) => {
 /**
  * Delete specific cache key
  */
-export const deleteCacheKey = async (req: Request, res: Response) => {
+export const deleteCacheKey = (req: Request, res: Response) => {
   try {
     const { key } = req.body;
     
     if (!key) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         error: 'Cache key is required in request body'
       });
+      return;
     }
 
     const deleted = CacheService.delete(key);
