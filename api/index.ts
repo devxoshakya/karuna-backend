@@ -6,6 +6,7 @@ import chatRouters from "../src/routes/chat.route.js";
 import drugRoutes from "../src/routes/medicine.route.js";
 import dataRoutes from "../src/routes/data.route.js";
 import studentRoutes from "../src/routes/student.route.js";
+import cacheRoutes from "../src/routes/cache.route.js";
 import path from 'path';
 
 const __dirname = path.resolve();
@@ -21,6 +22,7 @@ app.use("/api/chat", chatRouters);
 app.use("/api/medicine", drugRoutes);
 app.use("/api/data", dataRoutes);
 app.use("/api/student", studentRoutes);
+app.use("/api/cache", cacheRoutes);
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname,'src', 'templates', 'index.html'));
