@@ -94,6 +94,15 @@ export default function Home() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="mt-2 text-gray-600">Welcome to Karuna Healthcare Assistant</p>
+          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center">
+              <MessageCircle className="h-5 w-5 text-blue-500 mr-2" />
+              <p className="text-sm text-blue-800">
+                <strong>New!</strong> AI Chat Assistant is now available on every page. 
+                Look for the chat bubble in the bottom-right corner to get instant medical assistance.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Stats Grid */}
