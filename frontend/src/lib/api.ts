@@ -50,6 +50,40 @@ export const chatAPI = {
   sendMessage: (data: ChatMessage): Promise<{ data: ChatSendResponse }> => api.post('/chat/send', data),
 };
 
+export type DiagnosisRequest = {
+  symptoms: string;
+};
+
+export type DiagnosisResponse = {
+  diagnosis: string;
+  medications: Array<{
+    name: string;
+    description: string;
+  }>;
+  prescription: string[];
+  specialist: string;
+  dietary_suggestions: string[];
+  disclaimer: string;
+};
+
+export const diagnosisAPINew = {
+  getDiagnosis: (data: DiagnosisRequest): Promise<{ data: DiagnosisResponse }> => 
+    api.post('/diagnosis', data),
+};
+
+export const reportAPINew = {
+  uploadReport: (file: File): Promise<{ data: DiagnosisResponse }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    return api.post('/report', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+};
+
 export const medicineAPI = {
   search: (query: string) => api.get(`/medicine?q=${query}`),
   getAll: () => api.get('/medicine'),
