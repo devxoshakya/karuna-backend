@@ -35,7 +35,7 @@ app.get('/chat', (req, res) => {
 const PORT = process.env.PORT || 6969;
 
 if (process.env.VERCEL !== "1") {
-  app.listen(PORT, () => console.log("Server running on port 3000"));
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
 export default app; 

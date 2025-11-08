@@ -8,16 +8,24 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
  */
 export const processReport = async (req: any, res: any) => {
   try {
+    console.log("📄 PDF Report processing started");
+    
     if (!req.file) {
+      console.log("❌ No file uploaded");
       return res.status(400).json({ error: "No file uploaded" });
     }
+
+    console.log(`📁 File received: ${req.file.originalname}, Size: ${req.file.size} bytes, Type: ${req.file.mimetype}`);
 
     const pdfBuffer = req.file.buffer;
     const extractedText = await extractTextFromPDF(pdfBuffer);
 
     if (!extractedText) {
+      console.log("❌ Failed to extract any text from PDF");
       return res.status(500).json({ error: "Failed to extract text from PDF" });
     }
+
+    console.log(`✅ Extracted text length: ${extractedText.length} characters`);
 
     // 🧹 **Clean the extracted text using regex**
     const cleanedText = extractedText
@@ -41,11 +49,24 @@ export const processReport = async (req: any, res: any) => {
     `;
 
     // 🚀 **Send to Gemini AI**
+    console.log("🤖 Sending to Gemini AI...");
     const aiResponse = await getGeminiAnalysis(systemPrompt);
 
+    if (!aiResponse || aiResponse.trim() === "{}") {
+      console.log("❌ Gemini AI returned empty response");
+      return res.status(500).json({ error: "AI analysis failed" });
+    }
+
     // 🛠 **Clean and parse JSON response**
+    console.log("🔧 Parsing AI response...");
     const parsedData = cleanAndParseJSON(aiResponse);
 
+    if (parsedData.error) {
+      console.log("❌ Failed to parse AI response:", parsedData.error);
+      return res.status(500).json({ error: "Failed to parse AI response" });
+    }
+
+    console.log("✅ PDF processing completed successfully");
     res.json(parsedData);
   } catch (error) {
     console.error("Error processing report:", error);
@@ -58,23 +79,32 @@ export const processReport = async (req: any, res: any) => {
  */
 const extractTextFromPDF = async (pdfBuffer: Buffer): Promise<string> => {
   try {
+    console.log("🔍 Starting PDF text extraction...");
+    
     // ✅ Convert Buffer to Uint8Array
     const uint8Array = new Uint8Array(pdfBuffer);
+    console.log(`📊 Buffer converted to Uint8Array: ${uint8Array.length} bytes`);
 
     // ✅ Properly load the PDF
     const pdfDoc = await getDocument({ data: uint8Array }).promise;
+    console.log(`📖 PDF loaded successfully. Pages: ${pdfDoc.numPages}`);
+    
     let extractedText = "";
 
     for (let i = 1; i <= pdfDoc.numPages; i++) {
+      console.log(`📑 Processing page ${i}...`);
       const page = await pdfDoc.getPage(i);
       const textContent = await page.getTextContent();
       const pageText = textContent.items.map((item: any) => item.str).join(" ");
       extractedText += pageText + "\n";
+      console.log(`📄 Page ${i} text length: ${pageText.length} characters`);
     }
 
-    return extractedText.trim();
+    const result = extractedText.trim();
+    console.log(`✅ Total extracted text: ${result.length} characters`);
+    return result;
   } catch (error) {
-    console.error("Error extracting text from PDF:", error);
+    console.error("❌ Error extracting text from PDF:", error);
     return "";
   }
 };
