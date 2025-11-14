@@ -5,7 +5,7 @@ import reportRoutes from "../src/routes/report.route.js";
 import chatRouters from "../src/routes/chat.route.js";
 import drugRoutes from "../src/routes/medicine.route.js";
 import dataRoutes from "../src/routes/data.route.js";
-import studentRoutes from "../src/routes/student.route.js";
+
 import simpleCacheRoutes from "../src/routes/simpleCache.route.js";
 import path from 'path';
 
@@ -21,7 +21,7 @@ app.use("/api/report", reportRoutes);
 app.use("/api/chat", chatRouters);
 app.use("/api/medicine", drugRoutes);
 app.use("/api/data", dataRoutes);
-app.use("/api/student", studentRoutes);
+
 app.use("/api/cache", simpleCacheRoutes);
 
 app.get('/', (req, res) => {
