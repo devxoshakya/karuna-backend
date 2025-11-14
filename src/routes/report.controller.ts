@@ -1,5 +1,15 @@
-import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+
+// Import PDF library with error handling for serverless
+let getDocument: any;
+try {
+  // Try to import pdfjs-dist for serverless environment
+  const pdfjsLib = require("pdfjs-dist/legacy/build/pdf");
+  getDocument = pdfjsLib.getDocument;
+} catch (error) {
+  console.warn("⚠️ pdfjs-dist not available, using fallback PDF processing");
+  getDocument = null;
+}
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
@@ -9,6 +19,8 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 export const processReport = async (req: any, res: any) => {
   try {
     console.log("📄 PDF Report processing started");
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🔧 Runtime: ${process.env.VERCEL ? 'Vercel Serverless' : 'Local Node.js'}`);
     
     if (!req.file) {
       console.log("❌ No file uploaded");
@@ -16,6 +28,12 @@ export const processReport = async (req: any, res: any) => {
     }
 
     console.log(`📁 File received: ${req.file.originalname}, Size: ${req.file.size} bytes, Type: ${req.file.mimetype}`);
+
+    // Validate file type
+    if (req.file.mimetype !== 'application/pdf') {
+      console.log("❌ Invalid file type:", req.file.mimetype);
+      return res.status(400).json({ error: "Only PDF files are supported" });
+    }
 
     const pdfBuffer = req.file.buffer;
     const extractedText = await extractTextFromPDF(pdfBuffer);
@@ -75,11 +93,17 @@ export const processReport = async (req: any, res: any) => {
 };
 
 /**
- * Extracts text from a PDF file using pdfjs-dist.
+ * Extracts text from a PDF file with serverless fallback support.
  */
 const extractTextFromPDF = async (pdfBuffer: Buffer): Promise<string> => {
   try {
     console.log("🔍 Starting PDF text extraction...");
+    
+    // Check if pdfjs-dist is available (serverless compatibility)
+    if (!getDocument) {
+      console.log("⚠️ Using fallback PDF processing for serverless environment");
+      return extractTextFromPDFServerless(pdfBuffer);
+    }
     
     // ✅ Convert Buffer to Uint8Array
     const uint8Array = new Uint8Array(pdfBuffer);
@@ -105,7 +129,29 @@ const extractTextFromPDF = async (pdfBuffer: Buffer): Promise<string> => {
     return result;
   } catch (error) {
     console.error("❌ Error extracting text from PDF:", error);
-    return "";
+    console.log("🔄 Falling back to serverless PDF processing...");
+    return extractTextFromPDFServerless(pdfBuffer);
+  }
+};
+
+/**
+ * Serverless-compatible PDF text extraction using pdf-parse
+ */
+const extractTextFromPDFServerless = async (pdfBuffer: Buffer): Promise<string> => {
+  try {
+    console.log("🌐 Using serverless PDF extraction method...");
+    
+    // Use pdf-parse which is more serverless-friendly
+    const pdfParse = require("pdf-parse");
+    const data = await pdfParse(pdfBuffer);
+    
+    console.log(`✅ Serverless extraction completed: ${data.text.length} characters`);
+    return data.text;
+  } catch (error) {
+    console.error("❌ Serverless PDF extraction failed:", error);
+    
+    // Ultimate fallback - return a message indicating PDF couldn't be processed
+    return "PDF text extraction failed in serverless environment. Please try uploading a text file instead or contact support.";
   }
 };
 
